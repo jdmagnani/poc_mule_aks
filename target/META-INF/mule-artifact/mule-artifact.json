@@ -1,0 +1,27 @@
+{
+  "configs": [
+    "config.xml",
+    "simple-mule-app.xml"
+  ],
+  "secureProperties": [],
+  "supportedJavaVersions": [],
+  "redeploymentEnabled": true,
+  "name": "com.mycompany:simple-mule-app:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "config.xml",
+        "log4j2.xml",
+        "simple-mule-app.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

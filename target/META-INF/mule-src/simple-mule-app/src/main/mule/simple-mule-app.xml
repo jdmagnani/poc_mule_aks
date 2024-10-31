@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="simple-mule-appFlow"
+		doc:id="816dad78-da21-43b5-8561-7d61bfc82a29">
+		<http:listener doc:name="Listener"
+			doc:id="e2345a33-3468-4909-8cd7-51c701b3a5f0"
+			config-ref="HTTP_Listener_config" path="/hello" />
+		<set-payload
+			value="#['Hello from Mule ESB (Version: ' ++ mule.version ++ '). I am running inside docker image.']"
+			doc:name="Set Payload" doc:id="1aaec70e-6842-453d-ac4e-e30e328e5870"
+			mimeType="text/plain" />
+	</flow>
+</mule>
