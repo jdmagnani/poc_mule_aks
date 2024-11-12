@@ -6,9 +6,9 @@ on:
       environment:
         description: 'Environment selection'
         required: true
-        default: 'dev-com-ent-us'
+        default: 'dev-com'
         type: choice
-        options:
+        options: 
           - dev-com
           - stage-com
       currentVmName:
@@ -20,62 +20,32 @@ on:
         description: 'User Key'
         required: true
         type: string
-      productname:
-        description: 'Product Name (Optional)'
-        type: string
-      projectname:
-        description: 'Project Name (Optional)'
-        type: string
-      wssurl:
-        description: 'URL (Optional)'
-        type: string
-
 jobs:
-  run-scan:
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
+ build:
+   runs-on: ubuntu-latest
+   env:
+     RESOURCE_GROUP: "group-1"
+     VM_NAME: ${{ github.event.inputs.currentVmName }}
+     MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
+     MEND_USERKEY: ${{ github.event.inputs.userkey }}
+   
+   steps:
+     - name: Checkout repository
+       uses: actions/checkout@v2
 
-    steps:
-      - name: Set environment variables
-        run: |
-        env:
-          RESOURCE_GROUP: resource-group-name
-          VM_NAME: ${{ github.event.inputs.currentVmName }}
-          MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
-          MEND_USERKEY: ${{ github.event.inputs.userkey }}
-          WS_PRODUCTNAME: ${{ github.event.inputs.productname || 'prod-name' }}  # Use default if not provided
-          WS_PROJECTNAME: ${{ github.event.inputs.projectname || 'project-name' }}
-          WS_WSS_URL: ${{ github.event.inputs.wssurl || 'https://url' }}
-
-      - name: Print variables for debugging
-        run: |
-          echo "VM_NAME is ${{ env.VM_NAME }}"
-          echo "MEND_APIKEY is ${{ env.MEND_APIKEY }}"
-          echo "MEND_USERKEY is ${{ env.MEND_USERKEY }}"
-
-      - name: Downloading Mend jar (Refactored)
-        run: |
-          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
-            if [ ! -d "/mend" ]; then
-              mkdir /mend
-            fi
-            cd /mend
-            curl -O https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
-            chmod +x wss-unified-agent.jar
-          '
-
-      - name: Setting Mend environment variables (Optional Inputs)
-        run: |
-          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
-            export WS_APIKEY=${{ env.MEND_APIKEY }}
-            export WS_USERKEY=${{ env.MEND_USERKEY }}
-            export WS_PRODUCTNAME="prod-name"
-            export WS_PROJECTNAME="project-name"
-            export WS_WSS_URL="https://url"              
-          '
-
-      - name: Running Mend scan for Event Listener
-        run: |
-          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
-            cd /opt/mule/apps/msi-location-event-listener
-            java -jar /mend/
+     - name: Print variables for debugging
+       run: |
+         echo "VM_NAME is $VM_NAME"
+         echo "MEND_APIKEY is $MEND_APIKEY"
+         echo "MEND_USERKEY is $MEND_USERKEY"
+         echo "RESOURCE_GROUP is $RESOURCE_GROUP"
+   
+     - name: Setting Mend environment variables
+       run: |
+         az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
+           export WS_APIKEY=${{ secrets.MEND_API_KEY }}
+           export WS_USERKEY=${{ env.MEND_USERKEY }}
+           export WS_PRODUCTNAME="prodname"
+           export WS_PROJECTNAME="projectname"
+           export WS_WSS_URL="https://t"
+         '
