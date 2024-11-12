@@ -1,4 +1,4 @@
-name: Actions for tests
+name: Run Mend Scan on Azure VM
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Environment selection'
         required: true
-        default: 'dev-com'
+        default: 'dev-com-ent-us'
         type: choice
         options: 
           - dev-com
@@ -14,7 +14,7 @@ on:
       currentVmName:
         description: 'VM Name to run Mend Scan'
         required: true
-        default: 'VM-DEV-TESTS'
+        default: 'VM-DEV'
         type: string
       userkey:
         description: 'User Key'
@@ -27,15 +27,55 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
 
     steps:
-      env: 
-        RESOURCE_GROUP: mulesoft-anypoint-eastus
-        VM_NAME: ${{ github.event.inputs.currentVmName }}
-        MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
-        MEND_USERKEY: ${{ github.event.inputs.userkey }}
+      # Step to log in to Azure
+      - name: Azure Login - ${{ contains(github.event.inputs.environment, 'XX') && 'XX' || 'XX'}}
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PRIMARY }}
+          environment: ${{ contains(github.event.inputs.environment, 'XX') && 'XXX' || 'XXX'}}
+    
+        env: 
+          RESOURCE_GROUP: resource-group-name
+          VM_NAME: ${{ github.event.inputs.currentVmName }}
+          MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
+          MEND_USERKEY: ${{ github.event.inputs.userkey }}
 
-    - name: Print variables for debugging
-      run: |
-        echo "VM_NAME is ${{ env.VM_NAME }}"
-        echo "MEND_APIKEY is ${{ env.MEND_APIKEY }}"
-        echo "MEND_USERKEY is ${{ env.MEND_USERKEY }}"
-        
+      - name: Print variables for debugging
+        run: |
+          echo "VM_NAME is ${{ env.VM_NAME }}"
+          echo "MEND_APIKEY is ${{ env.MEND_APIKEY }}"
+          echo "MEND_USERKEY is ${{ env.MEND_USERKEY }}"
+
+      - name : Setting Mend environment variables
+        run: |
+          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
+            export WS_APIKEY=${{ env.MEND_APIKEY }}
+            export WS_USERKEY=${{ env.MEND_USERKEY }}
+            export WS_PRODUCTNAME="prod-name"
+            export WS_PROJECTNAME="project-name"
+            export WS_WSS_URL="https://url"              
+          '
+      - name : Downloading Mend jar
+        run: |
+          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
+            # Check if mend folder exists
+            if [ ! -d "/mend" ]; then
+              # Create mend folder if it doesn't exist
+              mkdir /mend
+            fi
+            cd /mend
+            curl -O https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
+            chmod +x wss-unified-agent.jar
+          '
+      - name : Running Mend scan for Event Listener
+        run: |
+          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
+            cd /opt/mule/apps/msi-location-event-listener
+            java -jar /mend/wss-unified-agent.jar
+          '    
+      - name : Running Mend scan for Web Sockets
+        run: |
+          az vm run-command invoke --command-id RunShellScript --name ${{ env.VM_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --scripts '
+            cd /opt/mule/apps/msi-websockets-api
+            java -jar /mend/wss-unified-agent.jar
+          '
