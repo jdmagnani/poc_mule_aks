@@ -31,9 +31,9 @@ jobs:
         run: |
         env: 
           RESOURCE_GROUP: resource-group-name
-          VM_NAME: "${{ github.event.inputs.currentVmName }}"
-          MEND_APIKEY: "${{ secrets.MEND_API_KEY }}"
-          MEND_USERKEY: "${{ github.event.inputs.userkey }}"
+          VM_NAME: github.event.inputs.currentVmName
+          MEND_APIKEY: secrets.MEND_API_KEY
+          MEND_USERKEY: github.event.inputs.userkey
 
       - name: Print variables for debugging
         run: |
