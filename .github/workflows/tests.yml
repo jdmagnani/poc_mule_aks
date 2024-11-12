@@ -1,0 +1,41 @@
+name: Actions for tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment selection'
+        required: true
+        default: 'dev-com'
+        type: choice
+        options: 
+          - dev-com
+          - stage-com
+      currentVmName:
+        description: 'VM Name to run Mend Scan'
+        required: true
+        default: 'VM-DEV-TESTS'
+        type: string
+      userkey:
+        description: 'User Key'
+        required: true
+        type: string
+
+jobs:
+  run-azure-cli:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      env: 
+        RESOURCE_GROUP: mulesoft-anypoint-eastus
+        VM_NAME: ${{ github.event.inputs.currentVmName }}
+        MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
+        MEND_USERKEY: ${{ github.event.inputs.userkey }}
+
+    - name: Print variables for debugging
+      run: |
+        echo "VM_NAME is ${{ env.VM_NAME }}"
+        echo "MEND_APIKEY is ${{ env.MEND_APIKEY }}"
+        echo "MEND_USERKEY is ${{ env.MEND_USERKEY }}"
+        
