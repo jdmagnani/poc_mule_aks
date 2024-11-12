@@ -38,14 +38,14 @@ jobs:
     steps:
       - name: Set environment variables
         run: |
-          env:
-            RESOURCE_GROUP: resource-group-name
-            VM_NAME: ${{ github.event.inputs.currentVmName }}
-            MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
-            MEND_USERKEY: ${{ github.event.inputs.userkey }}
-            WS_PRODUCTNAME: ${{ github.event.inputs.productname || 'prod-name' }}  # Use default if not provided
-            WS_PROJECTNAME: ${{ github.event.inputs.projectname || 'project-name' }}
-            WS_WSS_URL: ${{ github.event.inputs.wssurl || 'https://url' }}
+        env:
+          RESOURCE_GROUP: resource-group-name
+          VM_NAME: ${{ github.event.inputs.currentVmName }}
+          MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
+          MEND_USERKEY: ${{ github.event.inputs.userkey }}
+          WS_PRODUCTNAME: ${{ github.event.inputs.productname || 'prod-name' }}  # Use default if not provided
+          WS_PROJECTNAME: ${{ github.event.inputs.projectname || 'project-name' }}
+          WS_WSS_URL: ${{ github.event.inputs.wssurl || 'https://url' }}
 
       - name: Print variables for debugging
         run: |
