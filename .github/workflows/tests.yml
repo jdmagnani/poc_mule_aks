@@ -21,13 +21,13 @@ on:
         required: true
         type: string
       productname:
-        description: 'Mend Product Name (Optional)'
+        description: 'Product Name (Optional)'
         type: string
       projectname:
-        description: 'Mend Project Name (Optional)'
+        description: 'Project Name (Optional)'
         type: string
       wssurl:
-        description: 'Mend WSS URL (Optional)'
+        description: 'URL (Optional)'
         type: string
 
 jobs:
@@ -37,14 +37,15 @@ jobs:
 
     steps:
       - name: Set environment variables
-        env:
-          RESOURCE_GROUP: resource-group-name
-          VM_NAME: ${{ github.event.inputs.currentVmName }}
-          MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
-          MEND_USERKEY: ${{ github.event.inputs.userkey }}
-          WS_PRODUCTNAME: ${{ github.event.inputs.productname || 'prod-name' }}  # Use default if not provided
-          WS_PROJECTNAME: ${{ github.event.inputs.projectname || 'project-name' }}
-          WS_WSS_URL: ${{ github.event.inputs.wssurl || 'https://url' }}
+        run: |
+          env:
+            RESOURCE_GROUP: resource-group-name
+            VM_NAME: ${{ github.event.inputs.currentVmName }}
+            MEND_APIKEY: ${{ secrets.MEND_API_KEY }}
+            MEND_USERKEY: ${{ github.event.inputs.userkey }}
+            WS_PRODUCTNAME: ${{ github.event.inputs.productname || 'prod-name' }}  # Use default if not provided
+            WS_PROJECTNAME: ${{ github.event.inputs.projectname || 'project-name' }}
+            WS_WSS_URL: ${{ github.event.inputs.wssurl || 'https://url' }}
 
       - name: Print variables for debugging
         run: |
