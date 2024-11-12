@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Environment selection'
         required: true
-        default: 'dev-com-ent-us'
+        default: 'dev-com'
         type: choice
         options: 
           - dev-com
