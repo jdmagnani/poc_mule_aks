@@ -1,4 +1,4 @@
-name: Run Mend Scan on Azure VM
+name: Tests Mend Scan
 
 on:
   workflow_dispatch:
@@ -27,13 +27,7 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
 
     steps:
-      # Step to log in to Azure
-      - name: Azure Login - ${{ contains(github.event.inputs.environment, 'XX') && 'XX' || 'XX'}}
-        uses: Azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_PRIMARY }}
-          environment: ${{ contains(github.event.inputs.environment, 'XX') && 'XXX' || 'XXX'}}
-    
+      - name: Set environment variables
         env: 
           RESOURCE_GROUP: resource-group-name
           VM_NAME: ${{ github.event.inputs.currentVmName }}
