@@ -49,9 +49,9 @@ jobs:
 
       - name: Print variables for debugging
         run: |
-          echo "VM_NAME is ${{ env.VM_NAME }}"
-          echo "MEND_APIKEY is ${{ env.MEND_APIKEY }}"
-          echo "MEND_USERKEY is ${{ env.MEND_USERKEY }}"
+          echo "VM_NAME is $VM_NAME"
+          echo "MEND_APIKEY is $MEND_APIKEY"
+          echo "MEND_USERKEY is $MEND_USERKEY"
 
       - name: Downloading Mend jar (Refactored)
         run: |
