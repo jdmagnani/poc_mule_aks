@@ -28,6 +28,7 @@ jobs:
 
     steps:
       - name: Set environment variables
+        run: |
         env: 
           RESOURCE_GROUP: resource-group-name
           VM_NAME: ${{ github.event.inputs.currentVmName }}
