@@ -1,0 +1,16 @@
+name: Auto approval
+
+on: [deployment,workflow_dispatch]
+
+jobs:
+  auto_approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Approve Runs
+        uses: activescott/automate-environment-deployment-approval@main
+        with:
+          github_token: ${{ secrets.GH_JDM_PERSONAL_TOKEN }}
+          environment_allow_list: |
+           dev
+          actor_allow_list: |
+            jdmagnani
